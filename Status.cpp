@@ -25,6 +25,10 @@ double Status::getDistance(){
 	return this -> distance;
 }
 
+int Status::getCircumf(){
+	return circumf;
+}
+
 void Status::setAvgSpeed(double in){
 	this -> avgSpeed = in;
 }
@@ -35,4 +39,15 @@ void Status::setCurrentSpeed(double in){
 
 void Status::setDistance(double in){
 	this -> distance = in;
+}
+
+void Status::setCircumf(int in){
+	circumf = in;
+}
+
+void Status::reset(){
+	circumf = 210;
+	distance = 0;
+	currentSpeed = 0;
+	avgSpeed = 0;
 }

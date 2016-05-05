@@ -6,6 +6,7 @@
  */
 
 #include "StateMachine.h"
+#include "States.h"
 
 StateMachine::StateMachine() {
 
@@ -19,3 +20,8 @@ StateMachine::~StateMachine() {
 void StateMachine::transition(State* state){
 
 }
+
+std::string StateMachine::getStateID(){
+	return currentState->getID(*this);
+}
+

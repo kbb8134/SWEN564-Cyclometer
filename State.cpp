@@ -16,7 +16,7 @@ State::~State() {
 	// TODO Auto-generated destructor stub
 }
 
-std::string State::getID(){
+std::string State::getID(StateMachine& sm){
 	return this->ID;
 }
 

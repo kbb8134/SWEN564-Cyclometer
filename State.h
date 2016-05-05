@@ -5,11 +5,12 @@
  *      Author: Kristopher Brown & Madeleine Daigneau
  */
 
-#include<string>
-#include"StateMachine.h"
-
 #ifndef STATE_H_
 #define STATE_H_
+
+#include <string>
+#include "StateMachine.h"
+
 
 class State {
 
@@ -23,7 +24,7 @@ public:
 	virtual void onExit(StateMachine& statemachine)= 0;
 	virtual void accept(StateMachine& statemachine) =0;
 
-	std::string getID();
+	std::string getID(StateMachine&);
 
 };
 

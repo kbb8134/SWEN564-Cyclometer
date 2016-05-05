@@ -8,6 +8,9 @@
 #ifndef STATEMACHINE_H_
 #define STATEMACHINE_H_
 
+#include <string>
+//#include "State.h"
+
 class State;
 class StateMachine {
 
@@ -18,7 +21,7 @@ public:
 	virtual ~StateMachine();
 
 	void transition(State* state);
-
+	std::string getStateID();
 };
 
 #endif /* STATEMACHINE_H_ */

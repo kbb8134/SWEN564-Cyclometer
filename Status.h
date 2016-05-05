@@ -13,6 +13,7 @@ class Status {
 	double currentSpeed;
 	double avgSpeed;
 	double distance;
+	int circumf;
 
 public:
 
@@ -21,9 +22,12 @@ public:
 	double getCurrentSpeed();
 	double getAvgSpeed();
 	double getDistance();
+	int getCircumf();
 	void setCurrentSpeed(double);
 	void setAvgSpeed(double);
 	void setDistance(double);
+	void setCircumf(int);
+	void reset();
 };
 
 #endif /* STATUS_H_ */
