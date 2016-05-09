@@ -8,8 +8,13 @@
 #include "Cyclometer.h"
 
 Cyclometer::Cyclometer() {
+	// TODO
+	stateMachine = new StateMachine();
+	status = new Status();
+	units = false;
+	distancefactor = 0.0;
+	speedfactor = 0.0;
 	count = 0;
-
 }
 
 Cyclometer::~Cyclometer() {
@@ -59,4 +64,32 @@ void Cyclometer::resetAll(){
 	status -> reset();
 	count = 0;
 
+}
+
+void Cyclometer::checkQ()
+{
+	// Check Q for events
+	Event e = StaticMutexQ::mutexQ->read();
+	// TODO Do stuff with events
+	switch(e)
+	{
+	case SETBUTTON:
+		stateMachine->acceptEvent(e);
+		break;
+	case MODEBUTTON:
+		stateMachine->acceptEvent(e);
+		break;
+	case STARTSTOPBUTTON:
+		stateMachine->acceptEvent(e);
+		break;
+	case RESET:
+		reset();
+		break;
+	case RESETALL:
+		resetAll();
+		stateMachine->acceptEvent(e);
+		break;
+	default:
+		break;
+	}
 }

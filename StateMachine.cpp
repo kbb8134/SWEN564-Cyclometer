@@ -9,8 +9,7 @@
 #include "States.h"
 
 StateMachine::StateMachine() {
-
-
+	currentState = States::KM_MI;
 }
 
 StateMachine::~StateMachine() {
@@ -18,10 +17,18 @@ StateMachine::~StateMachine() {
 }
 
 void StateMachine::transition(State* state){
-
+	currentState->onExit(*this);
+	currentState = state;
+	currentState->onEnter(*this);
 }
 
 std::string StateMachine::getStateID(){
 	return currentState->getID(*this);
+}
+
+void StateMachine::acceptEvent(Event e)
+{
+	//TODO
+	currentState->accept(e);
 }
 

@@ -10,6 +10,7 @@
 
 #include <string>
 #include "StateMachine.h"
+#include "Event.h"
 
 
 class State {
@@ -22,7 +23,7 @@ public:
 
 	virtual void onEnter(StateMachine& statemachine) = 0;
 	virtual void onExit(StateMachine& statemachine)= 0;
-	virtual void accept(StateMachine& statemachine) =0;
+	virtual void accept(StateMachine& statemachine, Event e) =0;
 
 	std::string getID(StateMachine&);
 

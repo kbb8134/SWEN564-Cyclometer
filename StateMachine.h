@@ -8,8 +8,10 @@
 #ifndef STATEMACHINE_H_
 #define STATEMACHINE_H_
 
+#include <pthread.h>
 #include <string>
 //#include "State.h"
+#include "Event.h"
 
 class State;
 class StateMachine {
@@ -22,6 +24,7 @@ public:
 
 	void transition(State* state);
 	std::string getStateID();
+	void acceptEvent(Event e);
 };
 
 #endif /* STATEMACHINE_H_ */

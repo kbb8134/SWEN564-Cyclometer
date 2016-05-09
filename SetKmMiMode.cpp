@@ -11,8 +11,15 @@ void SetKmMiMode::onEnter(StateMachine& statemachine){
 
 }
 
-void SetKmMiMode::accept(StateMachine& statemachine){
-
+void SetKmMiMode::accept(StateMachine& statemachine, Event e){
+	switch(e)
+	{
+	case SETBUTTON:
+		statemachine.transition(States::TIRE_SIZE);
+		break;
+	default:
+		break;
+	}
 }
 
 void SetKmMiMode::onExit(StateMachine& statemachine){

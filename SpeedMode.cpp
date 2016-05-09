@@ -11,8 +11,18 @@ void SpeedMode::onEnter(StateMachine& statemachine){
 
 }
 
-void SpeedMode::accept(StateMachine& statemachine){
-
+void SpeedMode::accept(StateMachine& statemachine, Event e){
+	switch(e)
+	{
+	case MODEBUTTON:
+		statemachine.transition(States::DISTANCE);
+		break;
+	case RESETALL:
+		statemachine.transition(States::KM_MI);
+		break;
+	default:
+		break;
+	}
 }
 
 void SpeedMode::onExit(StateMachine& statemachine){

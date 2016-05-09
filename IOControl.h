@@ -8,6 +8,9 @@
 #ifndef IOCONTROL_H_
 #define IOCONTROL_H_
 
+#include "Event.h"
+#include "StaticMutexQ.h"
+
 enum AN7SEG { // DECIMAL POINT ACTIVE - binary or later
 	ZERO = 0x02,
 	ONE = 0x9E,

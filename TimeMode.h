@@ -17,7 +17,7 @@ public:
 
 	virtual void onEnter(StateMachine& statemachine);
 
-	virtual void accept(StateMachine& statemachine);
+	virtual void accept(StateMachine& statemachine, Event e);
 
 	virtual void onExit(StateMachine& statemachine);
 };

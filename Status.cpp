@@ -43,6 +43,8 @@ void Status::setDistance(double in){
 
 void Status::setCircumf(int in){
 	circumf = in;
+	if( circumf > 220 )
+		circumf = 190;
 }
 
 void Status::reset(){

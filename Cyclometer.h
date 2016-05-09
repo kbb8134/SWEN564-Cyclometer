@@ -13,9 +13,12 @@
 #define MICMF .000006213711922 //Factor of conversion for cm to mi
 #define KMCMF .00001 //Factor of conversion for cm to km
 
+#include <pthread.h>
 #include "StateMachine.h"
 #include "Status.h"
 #include <string>
+#include <queue>
+#include "StaticMutexQ.h"
 
 class Cyclometer {
 
@@ -36,6 +39,7 @@ public:
 	void setCalculations(bool);
 	void reset();
 	void resetAll();
+	void checkQ();
 };
 
 #endif /* CYCLOMETER_H_ */

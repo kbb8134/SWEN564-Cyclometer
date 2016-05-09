@@ -20,5 +20,10 @@ IOControl::~IOControl() {
  * Function to receive input from the QNX box
  */
 void IOControl::receive(){
-
+	//Read from inputs
+	//process inputs
+	// -debouncing
+	//load queue with signals - mutex
+	//write output signals
+	// wait a bit
 }

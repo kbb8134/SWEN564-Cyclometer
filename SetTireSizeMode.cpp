@@ -11,8 +11,18 @@ void SetTireSizeMode::onEnter(StateMachine& statemachine){
 
 }
 
-void SetTireSizeMode::accept(StateMachine& statemachine){
-
+void SetTireSizeMode::accept(StateMachine& statemachine, Event e){
+	switch(e)
+	{
+	case SETBUTTON:
+		statemachine.transition(States::SPEED);
+		break;
+	case RESETALL:
+		statemachine.transition(States::KM_MI);
+		break;
+	default:
+		break;
+	}
 }
 
 void SetTireSizeMode::onExit(StateMachine& statemachine){
