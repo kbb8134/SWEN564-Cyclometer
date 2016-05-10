@@ -7,8 +7,8 @@
 
 #include "States.h"
 
-State* States::TIRE_SIZE = new SetTireSizeMode("SetTireSizeMode");
-State* States::KM_MI = new SetKmMiMode("SetKmMiMode");
-State* States::TIME = new TimeMode("TimeMode");
-State* States::DISTANCE = new DistanceMode("DistanceMode");
-State* States::SPEED = new SpeedMode("SpeedMode");
+State* States::TIRE_SIZE = new SetTireSizeMode(SETTIRESIZEMODE);
+State* States::KM_MI = new SetKmMiMode(SETKMMIMODE);
+State* States::TIME = new TimeMode(TIMEMODE);
+State* States::DISTANCE = new DistanceMode(DISTANCEMODE);
+State* States::SPEED = new SpeedMode(SPEEDMODE);

@@ -7,14 +7,38 @@
 
 #include "Cyclometer.h"
 
-Cyclometer::Cyclometer() {
+void* thread_worker_cycl(void* arg)
+{
 	// TODO
+	while( true )
+	{
+		// read queue
+		((Cyclometer*)arg) -> checkQ();
+	}
+}
+
+Cyclometer::Cyclometer() {
+	// Initialize variables
 	stateMachine = new StateMachine();
-	status = new Status();
+	//status = new Status();
 	units = false;
 	distancefactor = 0.0;
 	speedfactor = 0.0;
 	count = 0;
+
+	// create thread
+	pthread_create(&thread, NULL, &thread_worker_cycl, (void*)this);
+	// HW IO registers
+	if( ThreadCtl(_NTO_TCTL_IO, NULL) == -1 )
+	{
+		std::perror("Error - could not access I/O registers");
+	}
+	// QNX Control registers
+	ctrlHandle = mmap_device_io(IO_PORT_SIZE, CTRL_ADDRESS);
+	if(ctrlHandle == MAP_DEVICE_FAILED)
+	{
+		std::perror("Could not map control register");
+	}
 }
 
 Cyclometer::~Cyclometer() {
@@ -28,15 +52,15 @@ void Cyclometer::calculate(double seconds){
 	double dist;
 	int circumf;
 	if(doCalculate){
-		circumf = status->getCircumf();
-		dist = status->getDistance();
+		circumf = StaticObj::status->getCircumf();
+		dist = StaticObj::status->getDistance();
 		count++;
-		avg = status->getAvgSpeed();
+		avg = StaticObj::status->getAvgSpeed();
 		curr = (circumf * speedfactor)/seconds;
-		status->setCurrentSpeed(curr);
-		status->setAvgSpeed(avg + ((curr-avg)/count));
+		StaticObj::status->setCurrentSpeed(curr);
+		StaticObj::status->setAvgSpeed(avg + ((curr-avg)/count));
 		dist += circumf * distancefactor;
-		status->setDistance(dist);
+		StaticObj::status->setDistance(dist);
 	}
 
 }
@@ -46,13 +70,15 @@ void Cyclometer::setCalculations(bool in){
 }
 
 void Cyclometer::reset(){
-	std::string id = stateMachine->getStateID();
-	if(strcmp(id, "SetTireSizeMode") || strcmp(id, "SetKmMiMode")){
+
+	int id = stateMachine->getStateID();
+
+	if(id == (int)SETKMMIMODE || id == (int)SETTIRESIZEMODE){
 
 	}
 	else{
 		count = 0;
-		status->reset();
+		StaticObj::status->reset();
 	}
 }
 
@@ -61,7 +87,7 @@ void Cyclometer::resetAll(){
 	 * TODO Cyclometer tells statemachine a reset all request.
 	 * Statemachine will have to transition to the intial state
 	 */
-	status -> reset();
+	StaticObj::status -> reset();
 	count = 0;
 
 }
@@ -69,7 +95,7 @@ void Cyclometer::resetAll(){
 void Cyclometer::checkQ()
 {
 	// Check Q for events
-	Event e = StaticMutexQ::mutexQ->read();
+	Event e = StaticObj::mutexQ->read();
 	// TODO Do stuff with events
 	switch(e)
 	{
@@ -88,6 +114,9 @@ void Cyclometer::checkQ()
 	case RESETALL:
 		resetAll();
 		stateMachine->acceptEvent(e);
+		break;
+	case WHEELPULSE:
+		//calculate(seconds);
 		break;
 	default:
 		break;

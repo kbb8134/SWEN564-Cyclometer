@@ -15,7 +15,6 @@
 #include "DistanceMode.h"
 #include "SpeedMode.h"
 
-
 class States {
 public:
 

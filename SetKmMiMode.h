@@ -9,11 +9,12 @@
 #define SETKMMIMODE_H_
 
 #include "State.h"
+#include "States.h"
 
 class SetKmMiMode: public State {
 public:
 
-	SetKmMiMode(const std::string &ID) : State(ID) { }
+	SetKmMiMode(StateID ID) : State(ID) { }
 
 	virtual void onEnter(StateMachine& statemachine);
 

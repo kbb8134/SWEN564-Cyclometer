@@ -17,13 +17,14 @@ class State;
 class StateMachine {
 
 	State* currentState;
+	pthread_t thread;
 
 public:
 	StateMachine();
 	virtual ~StateMachine();
 
 	void transition(State* state);
-	std::string getStateID();
+	int getStateID();
 	void acceptEvent(Event e);
 };
 

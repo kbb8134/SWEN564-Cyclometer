@@ -9,11 +9,13 @@
 #define SPEEDMODE_H_
 
 #include "State.h"
+#include "States.h"
+
 
 class SpeedMode: public State {
 public:
 
-	SpeedMode(const std::string &ID) : State(ID) { }
+	SpeedMode(StateID ID) : State(ID) { }
 
 	virtual void onEnter(StateMachine& statemachine);
 

@@ -9,11 +9,13 @@
 #define TIMEMODE_H_
 
 #include "State.h"
+#include "States.h"
+
 
 class TimeMode: public State {
 public:
 
-	TimeMode(const std::string &ID) : State(ID) { }
+	TimeMode(StateID ID) : State(ID) { }
 
 	virtual void onEnter(StateMachine& statemachine);
 

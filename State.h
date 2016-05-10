@@ -12,20 +12,29 @@
 #include "StateMachine.h"
 #include "Event.h"
 
+enum StateID {
+
+	SETTIRESIZEMODE = 1,
+	SETKMMIMODE = 2,
+	TIMEMODE = 3,
+	DISTANCEMODE = 4,
+	SPEEDMODE = 5
+
+};
 
 class State {
 
-	std::string ID;
+	StateID ID;
 
 public:
-	State(std::string name);
+	State(StateID);
 	virtual ~State();
 
 	virtual void onEnter(StateMachine& statemachine) = 0;
 	virtual void onExit(StateMachine& statemachine)= 0;
 	virtual void accept(StateMachine& statemachine, Event e) =0;
 
-	std::string getID(StateMachine&);
+	StateID getID(StateMachine&);
 
 };
 

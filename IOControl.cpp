@@ -23,7 +23,7 @@ void IOControl::receive(){
 	//Read from inputs
 	//process inputs
 	// -debouncing
-	//load queue with signals - mutex
+	//load queue with signals - StaticObj::mutexQ->write(event)
 	//write output signals
 	// wait a bit
 }

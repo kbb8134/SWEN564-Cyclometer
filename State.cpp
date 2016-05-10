@@ -7,7 +7,7 @@
 
 #include "State.h"
 
-State::State(std::string id) {
+State::State(StateID id) {
 	this -> ID = id;
 
 }
@@ -16,7 +16,7 @@ State::~State() {
 	// TODO Auto-generated destructor stub
 }
 
-std::string State::getID(StateMachine& sm){
+StateID State::getID(StateMachine& sm){
 	return this->ID;
 }
 

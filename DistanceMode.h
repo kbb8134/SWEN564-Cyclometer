@@ -9,11 +9,13 @@
 #define DISTANCEMODE_H_
 
 #include "State.h"
+#include "States.h"
+
 
 class DistanceMode: public State {
 public:
 
-	DistanceMode(const std::string &ID) : State(ID) { }
+	DistanceMode(StateID ID) : State(ID) { }
 
 	virtual void onEnter(StateMachine& statemachine);
 

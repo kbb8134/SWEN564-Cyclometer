@@ -9,7 +9,7 @@
 #define IOCONTROL_H_
 
 #include "Event.h"
-#include "StaticMutexQ.h"
+#include "StaticObj.h"
 
 enum AN7SEG { // DECIMAL POINT ACTIVE - binary or later
 	ZERO = 0x02,
@@ -22,7 +22,7 @@ enum AN7SEG { // DECIMAL POINT ACTIVE - binary or later
 	SEVEN = 0x1E,
 	EIGHT = 0x00,
 	NINE = 0x08
-}
+};
 
 class IOControl {
 public:

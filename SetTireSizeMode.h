@@ -9,11 +9,13 @@
 #define SETTIRESIZEMODE_H_
 
 #include "State.h"
+#include "States.h"
+
 
 class SetTireSizeMode: public State {
 public:
 
-	SetTireSizeMode(const std::string &ID) : State(ID) { }
+	SetTireSizeMode(StateID ID) : State(ID) { }
 
 	virtual void onEnter(StateMachine& statemachine);
 
