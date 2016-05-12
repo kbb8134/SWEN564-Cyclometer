@@ -23,6 +23,7 @@ public:
 
 	virtual void onExit(StateMachine& statemachine);
 
+	virtual void update(StateMachine& statemachine);
 };
 
 #endif /* SETTIRESIZEMODE_H_ */

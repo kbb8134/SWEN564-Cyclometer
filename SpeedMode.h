@@ -23,6 +23,7 @@ public:
 
 	virtual void onExit(StateMachine& statemachine);
 
+	virtual void update(StateMachine& statemachine);
 };
 
 #endif /* SPEEDMODE_H_ */

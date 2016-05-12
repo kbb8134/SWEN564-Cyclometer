@@ -14,6 +14,7 @@ class Status {
 	double avgSpeed;
 	double distance;
 	int circumf;
+	// variables for seven segment displays & LEDs
 
 public:
 

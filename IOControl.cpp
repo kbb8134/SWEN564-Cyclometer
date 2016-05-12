@@ -20,10 +20,12 @@ IOControl::~IOControl() {
  * Function to receive input from the QNX box
  */
 void IOControl::receive(){
-	//Read from inputs
+	//Read from inputs on FPGA
+	// check for wheel pulse
 	//process inputs
-	// -debouncing
+	// -debouncing buttons
 	//load queue with signals - StaticObj::mutexQ->write(event)
+	// read output vars from status - StaticObj::status
 	//write output signals
 	// wait a bit
 }

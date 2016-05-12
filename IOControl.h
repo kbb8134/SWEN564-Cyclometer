@@ -11,7 +11,7 @@
 #include "Event.h"
 #include "StaticObj.h"
 
-enum AN7SEG { // DECIMAL POINT ACTIVE - binary or later
+enum AN7SEG { // DECIMAL POINT ACTIVE - binary OR to deactivate = (1)|AN7SEG
 	ZERO = 0x02,
 	ONE = 0x9E,
 	TWO = 0x28,

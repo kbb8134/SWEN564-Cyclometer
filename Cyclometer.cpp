@@ -14,6 +14,7 @@ void* thread_worker_cycl(void* arg)
 	{
 		// read queue
 		((Cyclometer*)arg) -> checkQ();
+		// TODO wait a bit
 	}
 }
 
@@ -89,7 +90,6 @@ void Cyclometer::resetAll(){
 	 */
 	StaticObj::status -> reset();
 	count = 0;
-
 }
 
 void Cyclometer::checkQ()

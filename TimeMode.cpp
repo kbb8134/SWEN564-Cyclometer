@@ -28,3 +28,8 @@ void TimeMode::accept(StateMachine& statemachine, Event e){
 void TimeMode::onExit(StateMachine& statemachine){
 
 }
+
+
+void TimeMode::update(StateMachine& statemachine){
+	// TODO change status output vars
+}

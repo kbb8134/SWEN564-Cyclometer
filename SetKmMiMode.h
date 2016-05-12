@@ -21,6 +21,8 @@ public:
 	virtual void accept(StateMachine& statemachine, Event e);
 
 	virtual void onExit(StateMachine& statemachine);
+
+	virtual void update(StateMachine& statemachine);
 };
 
 #endif /* SETKMMIMODE_H_ */

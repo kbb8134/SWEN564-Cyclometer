@@ -33,6 +33,7 @@ public:
 	virtual void onEnter(StateMachine& statemachine) = 0;
 	virtual void onExit(StateMachine& statemachine)= 0;
 	virtual void accept(StateMachine& statemachine, Event e) =0;
+	virtual void update(StateMachine& statemachine) = 0;
 
 	StateID getID(StateMachine&);
 

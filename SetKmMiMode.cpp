@@ -26,3 +26,6 @@ void SetKmMiMode::onExit(StateMachine& statemachine){
 
 }
 
+void SetKmMiMode::update(StateMachine& statemachine){
+	// TODO change status output vars
+}

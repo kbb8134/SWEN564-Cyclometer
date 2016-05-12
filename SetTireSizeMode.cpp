@@ -28,3 +28,8 @@ void SetTireSizeMode::accept(StateMachine& statemachine, Event e){
 void SetTireSizeMode::onExit(StateMachine& statemachine){
 
 }
+
+
+void SetTireSizeMode::update(StateMachine& statemachine){
+	// TODO change status output vars
+}

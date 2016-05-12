@@ -26,6 +26,7 @@ public:
 	void transition(State* state);
 	int getStateID();
 	void acceptEvent(Event e);
+	void update();
 };
 
 #endif /* STATEMACHINE_H_ */

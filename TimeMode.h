@@ -22,6 +22,8 @@ public:
 	virtual void accept(StateMachine& statemachine, Event e);
 
 	virtual void onExit(StateMachine& statemachine);
+
+	virtual void update(StateMachine& statemachine);
 };
 
 #endif /* TIMEMODE_H_ */

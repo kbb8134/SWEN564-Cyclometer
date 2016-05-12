@@ -26,3 +26,7 @@ void DistanceMode::accept(StateMachine& statemachine, Event e){
 void DistanceMode::onExit(StateMachine& statemachine){
 
 }
+
+void DistanceMode::update(StateMachine& statemachine){
+	// TODO change status output vars
+}

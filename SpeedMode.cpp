@@ -29,3 +29,8 @@ void SpeedMode::accept(StateMachine& statemachine, Event e){
 void SpeedMode::onExit(StateMachine& statemachine){
 
 }
+
+void SpeedMode::update(StateMachine& statemachine){
+	// TODO change status output vars
+}
+

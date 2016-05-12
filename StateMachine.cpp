@@ -13,6 +13,8 @@ void* thread_worker_sm(void* arg)
 	while(true)
 	{
 		// TODO
+		((StateMachine*)arg)->update();
+		// Wait a bit
 	}
 }
 
@@ -43,3 +45,7 @@ void StateMachine::acceptEvent(Event e)
 	currentState->accept(*this, e);
 }
 
+void StateMachine::update()
+{
+	currentState->update(*this);
+}
