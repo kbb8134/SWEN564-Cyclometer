@@ -12,9 +12,12 @@ void* thread_worker_cycl(void* arg)
 	// TODO
 	while( true )
 	{
-		// read queue
+		//check for timeout
+		((Cyclometer*)arg) -> checkTimeout();
+		//check for events in queue
 		((Cyclometer*)arg) -> checkQ();
-		// TODO wait a bit
+		//wait a bit
+		usleep(2000);
 	}
 }
 
@@ -26,6 +29,7 @@ Cyclometer::Cyclometer() {
 	distancefactor = 0.0;
 	speedfactor = 0.0;
 	count = 0;
+	autoMode = true;
 
 	// create thread
 	pthread_create(&thread, NULL, &thread_worker_cycl, (void*)this);
@@ -40,6 +44,7 @@ Cyclometer::Cyclometer() {
 	{
 		std::perror("Could not map control register");
 	}
+	lastPulse = time( NULL );
 }
 
 Cyclometer::~Cyclometer() {
@@ -47,39 +52,30 @@ Cyclometer::~Cyclometer() {
 }
 
 void Cyclometer::calculate(double seconds){
-
-	double curr;
-	double avg;
-	double dist;
-	int circumf;
-	if(doCalculate){
-		circumf = StaticObj::status->getCircumf();
-		dist = StaticObj::status->getDistance();
-		count++;
-		avg = StaticObj::status->getAvgSpeed();
-		curr = (circumf * speedfactor)/seconds;
-		StaticObj::status->setCurrentSpeed(curr);
-		StaticObj::status->setAvgSpeed(avg + ((curr-avg)/count));
-		dist += circumf * distancefactor;
-		StaticObj::status->setDistance(dist);
-	}
-
+	stateMachine->calculate(seconds);
 }
 
 void Cyclometer::setCalculations(bool in){
-	this->doCalculate = in;
+	//this->doCalculate = in;
+	stateMachine->setCalculations(in);
+}
+
+void Cyclometer::setAutoMode(bool in){
+	/*this->autoMode = in;
+	if(~in) setCalculations(false);
+	else setCalculations(true);*/
+	stateMachine->setAutoMode(in);
 }
 
 void Cyclometer::reset(){
 
 	int id = stateMachine->getStateID();
 
-	if(id == (int)SETKMMIMODE || id == (int)SETTIRESIZEMODE){
-
-	}
+	if(id == (int)SETKMMIMODE || id == (int)SETTIRESIZEMODE){}
 	else{
 		count = 0;
 		StaticObj::status->reset();
+		stateMachine->reset();
 	}
 }
 
@@ -89,7 +85,20 @@ void Cyclometer::resetAll(){
 	 * Statemachine will have to transition to the intial state
 	 */
 	StaticObj::status -> reset();
+	stateMachine->reset();
 	count = 0;
+}
+
+void Cyclometer::checkTimeout()
+{
+	//check for timeout since last wheel pulse
+	time_t t = time( NULL );
+	float seconds = difftime(lastPulse,t);
+	if (seconds > PULSETIMEOUT)
+	{
+		//queue timeout event
+		StaticObj::mutexQ->write(TIMEOUT);
+	}
 }
 
 void Cyclometer::checkQ()
@@ -97,6 +106,8 @@ void Cyclometer::checkQ()
 	// Check Q for events
 	Event e = StaticObj::mutexQ->read();
 	// TODO Do stuff with events
+	time_t t;
+	float seconds;
 	switch(e)
 	{
 	case SETBUTTON:
@@ -116,7 +127,14 @@ void Cyclometer::checkQ()
 		stateMachine->acceptEvent(e);
 		break;
 	case WHEELPULSE:
-		//calculate(seconds);
+		setCalculations(true);
+		t = time( NULL );
+		seconds = difftime(lastPulse,t);
+		calculate(seconds);
+		lastPulse = t;
+		break;
+	case TIMEOUT:
+		if(autoMode) setCalculations(false);
 		break;
 	default:
 		break;

@@ -9,6 +9,7 @@
 
 void DistanceMode::onEnter(StateMachine& statemachine){
 
+	update(statemachine);
 }
 
 void DistanceMode::accept(StateMachine& statemachine, Event e){

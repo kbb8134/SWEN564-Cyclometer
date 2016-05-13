@@ -8,23 +8,30 @@
 #ifndef IOCONTROL_H_
 #define IOCONTROL_H_
 
+#include <cstdio>
+#include <stdint.h>
+#include <sys/neutrino.h>
+#include <sys/mman.h>
+#include <hw/inout.h>
+#include <unistd.h>
+
+#define IO_PORT_SIZE 1
+#define IO_CONTROL_REGISTER 0x28B
+
+#define IO_A_REGISTER 0x288
+#define IO_B_REGISTER 0x289
+#define IO_C_REGISTER 0x28A
+#define IO_PORT_SIZE 1 //TODO Probably change this later
+
 #include "Event.h"
 #include "StaticObj.h"
-
-enum AN7SEG { // DECIMAL POINT ACTIVE - binary OR to deactivate = (1)|AN7SEG
-	ZERO = 0x02,
-	ONE = 0x9E,
-	TWO = 0x28,
-	THREE = 0x0C,
-	FOUR = 0x98,
-	FIVE = 0x48,
-	SIX = 0x40,
-	SEVEN = 0x1E,
-	EIGHT = 0x00,
-	NINE = 0x08
-};
+#include "An7Seg.h"
 
 class IOControl {
+	uintptr_t CONTROL_HANDLE;
+	uintptr_t A_HANDLE;
+	uintptr_t B_HANDLE;
+	uintptr_t C_HANDLE;
 public:
 
 	/*
@@ -37,7 +44,6 @@ public:
 	~IOControl();
 
 	void receive();
-	
 
 };
 

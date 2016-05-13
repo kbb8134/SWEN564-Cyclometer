@@ -9,6 +9,7 @@
 
 
 void SpeedMode::onEnter(StateMachine& statemachine){
+	update(statemachine);
 
 }
 

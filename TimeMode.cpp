@@ -8,7 +8,7 @@
 #include "TimeMode.h"
 
 void TimeMode::onEnter(StateMachine& statemachine){
-
+	update(statemachine);
 }
 
 void TimeMode::accept(StateMachine& statemachine, Event e){
@@ -20,6 +20,9 @@ void TimeMode::accept(StateMachine& statemachine, Event e){
 	case RESETALL:
 		statemachine.transition(States::KM_MI);
 		break;
+	case SETBUTTON:
+		// manualmde
+		break;
 	default:
 		break;
 	}
@@ -29,7 +32,5 @@ void TimeMode::onExit(StateMachine& statemachine){
 
 }
 
-
-void TimeMode::update(StateMachine& statemachine){
-	// TODO change status output vars
+void TimeMode::update(StateMachine& stateMachine){
 }

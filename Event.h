@@ -15,7 +15,8 @@ enum Event {
 	STARTSTOPBUTTON = 3,
 	RESET = 4,
 	RESETALL = 5,
-	WHEELPULSE = 6
+	WHEELPULSE = 6,
+	TIMEOUT = 7
 };
 
 #endif /* EVENT_H_ */

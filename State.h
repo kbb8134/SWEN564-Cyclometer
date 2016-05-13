@@ -11,16 +11,7 @@
 #include <string>
 #include "StateMachine.h"
 #include "Event.h"
-
-enum StateID {
-
-	SETTIRESIZEMODE = 1,
-	SETKMMIMODE = 2,
-	TIMEMODE = 3,
-	DISTANCEMODE = 4,
-	SPEEDMODE = 5
-
-};
+#include "StateID.h"
 
 class State {
 

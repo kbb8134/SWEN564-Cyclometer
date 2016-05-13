@@ -8,6 +8,7 @@
 #include "SetTireSizeMode.h"
 
 void SetTireSizeMode::onEnter(StateMachine& statemachine){
+	update(statemachine);
 
 }
 

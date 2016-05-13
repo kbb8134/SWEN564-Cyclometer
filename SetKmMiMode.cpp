@@ -8,6 +8,7 @@
 #include "SetKmMiMode.h"
 
 void SetKmMiMode::onEnter(StateMachine& statemachine){
+	update(statemachine);
 
 }
 
