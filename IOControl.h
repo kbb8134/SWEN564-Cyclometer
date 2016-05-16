@@ -14,6 +14,7 @@
 #include <sys/mman.h>
 #include <hw/inout.h>
 #include <unistd.h>
+#include <iostream.h>
 
 #define IO_PORT_SIZE 1
 #define IO_CONTROL_REGISTER 0x28B

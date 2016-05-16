@@ -8,6 +8,8 @@
 #ifndef STATUS_H_
 #define STATUS_H_
 
+#include <pthread.h>
+
 #include "An7Seg.h"
 #include "StateID.h"
 
@@ -19,6 +21,8 @@ class Status {
 	int circumf;
 	float elapsedTime;
 	bool km;
+	bool calc;
+	bool pulseTimeout;
 	int count;
 	AN7SEG an1;
 	AN7SEG an2;
@@ -30,7 +34,11 @@ public:
 
 	Status();
 
+	pthread_mutex_t* accessAnode;
+
 	// GETs
+	bool getTimeout();
+	bool getCalc();
 	bool getKm();
 	double getCurrentSpeed();
 	double getAvgSpeed();
@@ -39,6 +47,8 @@ public:
 	float getTime();
 	int getCount();
 	// SETs
+	void setTimeout(bool);
+	void setCalc(bool);
 	void setKm(bool);
 	void setCurrentSpeed(double);
 	void setAvgSpeed(double);

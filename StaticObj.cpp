@@ -9,3 +9,4 @@
 
 MutexQ* StaticObj::mutexQ = new MutexQ();
 Status* StaticObj::status = new Status();
+

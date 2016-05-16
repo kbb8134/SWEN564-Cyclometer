@@ -13,6 +13,7 @@ void SetTireSizeMode::onEnter(StateMachine& statemachine){
 }
 
 void SetTireSizeMode::accept(StateMachine& statemachine, Event e){
+	int tiresz;
 	switch(e)
 	{
 	case SETBUTTON:
@@ -20,6 +21,10 @@ void SetTireSizeMode::accept(StateMachine& statemachine, Event e){
 		break;
 	case RESETALL:
 		statemachine.transition(States::KM_MI);
+		break;
+	case MODEBUTTON:
+		tiresz = StaticObj::status->getCircumf();
+		StaticObj::status->setCircumf(++tiresz);
 		break;
 	default:
 		break;

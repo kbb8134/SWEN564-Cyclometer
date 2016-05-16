@@ -30,11 +30,12 @@ Cyclometer::Cyclometer() {
 	speedfactor = 0.0;
 	count = 0;
 	autoMode = true;
+	lastPulse = time( NULL );
 
 	// create thread
 	pthread_create(&thread, NULL, &thread_worker_cycl, (void*)this);
 	// HW IO registers
-	if( ThreadCtl(_NTO_TCTL_IO, NULL) == -1 )
+	/*if( ThreadCtl(_NTO_TCTL_IO, NULL) == -1 )
 	{
 		std::perror("Error - could not access I/O registers");
 	}
@@ -43,8 +44,7 @@ Cyclometer::Cyclometer() {
 	if(ctrlHandle == MAP_DEVICE_FAILED)
 	{
 		std::perror("Could not map control register");
-	}
-	lastPulse = time( NULL );
+	}*/
 }
 
 Cyclometer::~Cyclometer() {
@@ -58,6 +58,7 @@ void Cyclometer::calculate(double seconds){
 void Cyclometer::setCalculations(bool in){
 	//this->doCalculate = in;
 	stateMachine->setCalculations(in);
+	StaticObj::status->setCalc(in);
 }
 
 void Cyclometer::setAutoMode(bool in){
@@ -97,14 +98,18 @@ void Cyclometer::checkTimeout()
 	if (seconds > PULSETIMEOUT)
 	{
 		//queue timeout event
+		StaticObj::mutexQ->lock();
 		StaticObj::mutexQ->write(TIMEOUT);
+		StaticObj::mutexQ->unlock();
 	}
 }
 
 void Cyclometer::checkQ()
 {
 	// Check Q for events
+	StaticObj::mutexQ->lock();
 	Event e = StaticObj::mutexQ->read();
+	StaticObj::mutexQ->unlock();
 	// TODO Do stuff with events
 	time_t t;
 	float seconds;
@@ -127,6 +132,7 @@ void Cyclometer::checkQ()
 		stateMachine->acceptEvent(e);
 		break;
 	case WHEELPULSE:
+		StaticObj::status->setTimeout(false);
 		setCalculations(true);
 		t = time( NULL );
 		seconds = difftime(lastPulse,t);
@@ -134,6 +140,7 @@ void Cyclometer::checkQ()
 		lastPulse = t;
 		break;
 	case TIMEOUT:
+		StaticObj::status->setTimeout(true);
 		if(autoMode) setCalculations(false);
 		break;
 	default:

@@ -47,6 +47,7 @@ public:
 	void setCalculations(bool);
 	void setAutoMode(bool);
 	void reset();
+	void setUnits(bool);
 };
 
 #endif /* STATEMACHINE_H_ */

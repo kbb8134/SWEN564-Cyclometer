@@ -20,9 +20,7 @@ void* thread_worker_sm(void* arg)
 
 StateMachine::StateMachine() {
 	currentState = States::KM_MI;
-	units = false;
-	distancefactor = 0.0;
-	speedfactor = 0.0;
+	setUnits( false );
 	count = 0;
 	autoMode = true;
 	// create thread
@@ -76,6 +74,11 @@ void StateMachine::calculate(double seconds)
 	circumf = StaticObj::status->getCircumf();
 	curr = (circumf * speedfactor)/seconds;
 	StaticObj::status->setCurrentSpeed(curr);
+	double t = StaticObj::status->getTime();
+	time_t currtime = time(NULL);
+	double diff = difftime(startTrip,currtime);
+	StaticObj::status->setTime(t+diff);
+	startTrip = currtime;
 	if(doCalculate){
 		count = StaticObj::status->getCount();
 		dist = StaticObj::status->getDistance();
@@ -84,11 +87,6 @@ void StateMachine::calculate(double seconds)
 		StaticObj::status->setAvgSpeed(avg + ((curr-avg)/count));
 		dist += circumf * distancefactor;
 		StaticObj::status->setDistance(dist);
-		double t = StaticObj::status->getTime();
-		time_t curr = time(NULL);
-		double diff = difftime(startTrip,curr);
-		StaticObj::status->setTime(t+diff);
-		startTrip = curr;
 		StaticObj::status->setCount(count);
 	}
 }
@@ -96,4 +94,20 @@ void StateMachine::calculate(double seconds)
 void StateMachine::reset()
 {
 	count = 0;
+	startTrip = time(NULL);
+}
+
+void StateMachine::setUnits(bool in)
+{
+	units = in;
+	if(units)
+	{
+		distancefactor = MICMF;
+		speedfactor = MIF;
+	}
+	else
+	{
+		distancefactor = KMCMF;
+		speedfactor = KMF;
+	}
 }

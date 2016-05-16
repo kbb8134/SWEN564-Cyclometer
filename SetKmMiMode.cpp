@@ -13,10 +13,16 @@ void SetKmMiMode::onEnter(StateMachine& statemachine){
 }
 
 void SetKmMiMode::accept(StateMachine& statemachine, Event e){
+	bool km;
 	switch(e)
 	{
 	case SETBUTTON:
 		statemachine.transition(States::TIRE_SIZE);
+		break;
+	case MODEBUTTON:
+		km = StaticObj::status->getKm();
+		statemachine.setUnits(km);
+		StaticObj::status->setKm(!km);
 		break;
 	default:
 		break;

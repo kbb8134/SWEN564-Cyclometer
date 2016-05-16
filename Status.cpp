@@ -17,6 +17,15 @@ Status::Status() {
 	an4 = OFF;
 	km = true;
 }
+//GETs
+bool Status::getTimeout()
+{
+	return pulseTimeout;
+}
+bool Status::getCalc()
+{
+	return calc;
+}
 
 bool Status::getKm()
 {
@@ -46,6 +55,17 @@ float Status::getTime(){
 int Status::getCount()
 {
 	return count;
+}
+
+// SETs
+void Status::setTimeout(bool in)
+{
+	pulseTimeout = in;
+}
+
+void Status::setCalc(bool in)
+{
+	calc = in;
 }
 
 void Status::setKm(bool in)
@@ -101,6 +121,13 @@ void Status::updateDisplay(StateID id)
 	switch(id)
 	{
 	case SETTIRESIZEMODE:
+		seg100 = circumf/100;
+		seg10 = (circumf - 100*seg100)/10;
+		seg1 = circumf - 100*seg100 - 10*seg10;
+		setAnode(1,-1,false);
+		setAnode(2,seg100,false);
+		setAnode(3,seg10,false);
+		setAnode(4,seg1,false);
 		break;
 	case SETKMMIMODE:
 		setAnode(1,-1,false);
