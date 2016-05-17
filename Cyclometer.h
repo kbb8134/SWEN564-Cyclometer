@@ -33,6 +33,9 @@
 
 #define CTRL_ADDRESS 0x288 // Base 280h + 8
 
+#include <pthread.h>
+#include <queue>
+
 class Cyclometer {
 
 	StateMachine* stateMachine;
@@ -49,11 +52,14 @@ class Cyclometer {
     time_t lastPulse;
     time_t startTrip;
 
+	std::queue< Event > *q;
+	pthread_mutex_t *accessQ;
 public:
 	Cyclometer();
+	Cyclometer( std::queue<Event>* qin, pthread_mutex_t *aQ );
 	virtual ~Cyclometer();
 
-	void calculate(double seconds);
+	void calculate(int seconds);
 	void setCalculations(bool);
 	void setAutoMode(bool);
 	void reset();

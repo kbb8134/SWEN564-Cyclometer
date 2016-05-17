@@ -21,7 +21,7 @@ void TimeMode::accept(StateMachine& statemachine, Event e){
 		statemachine.transition(States::KM_MI);
 		break;
 	case SETBUTTON:
-		// manualmde
+		// manualmode
 		break;
 	default:
 		break;

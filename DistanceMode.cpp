@@ -14,6 +14,9 @@ void DistanceMode::onEnter(StateMachine& statemachine){
 
 void DistanceMode::accept(StateMachine& statemachine, Event e){
 	switch(e){
+	case MODEBUTTON:
+		statemachine.transition(States::TIME);
+		break;
 	case SETBUTTON:
 		statemachine.transition(States::TIRE_SIZE);
 		break;

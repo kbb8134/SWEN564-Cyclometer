@@ -63,7 +63,7 @@ void StateMachine::update()
 	StaticObj::status->updateDisplay(getStateID());
 }
 
-void StateMachine::calculate(double seconds)
+void StateMachine::calculate(int seconds)
 {
 	// TODO
 	double curr;
@@ -73,10 +73,12 @@ void StateMachine::calculate(double seconds)
 	int count;
 	circumf = StaticObj::status->getCircumf();
 	curr = (circumf * speedfactor)/seconds;
+	if( curr > 99 || curr < 0 ) curr = 0.0;
+	//if(isinf(curr)) curr = 0.0;
 	StaticObj::status->setCurrentSpeed(curr);
 	double t = StaticObj::status->getTime();
 	time_t currtime = time(NULL);
-	double diff = difftime(startTrip,currtime);
+	double diff = -1*difftime(startTrip,currtime);
 	StaticObj::status->setTime(t+diff);
 	startTrip = currtime;
 	if(doCalculate){

@@ -11,6 +11,7 @@ Status::Status() {
 	this -> currentSpeed = 0.0;
 	this -> avgSpeed = 0.0;
 	this -> distance = 0.0;
+	circumf = 210;
 	an1 = OFF;
 	an2 = OFF;
 	an3 = OFF;
@@ -120,6 +121,13 @@ void Status::updateDisplay(StateID id)
 	bool avg10 = false;
 	switch(id)
 	{
+	case SETKMMIMODE:
+		setAnode(1,-1,false);
+		setAnode(2,-1,false);
+		setAnode(3,-1,false);
+		if(km) setAnode(4,1,false);
+		else setAnode(4,2,false);
+		break;
 	case SETTIRESIZEMODE:
 		seg100 = circumf/100;
 		seg10 = (circumf - 100*seg100)/10;
@@ -128,13 +136,6 @@ void Status::updateDisplay(StateID id)
 		setAnode(2,seg100,false);
 		setAnode(3,seg10,false);
 		setAnode(4,seg1,false);
-		break;
-	case SETKMMIMODE:
-		setAnode(1,-1,false);
-		setAnode(2,-1,false);
-		setAnode(3,-1,false);
-		if(km) setAnode(4,1,false);
-		else setAnode(4,2,false);
 		break;
 	case TIMEMODE:
 		min = (elapsedTime/60);
@@ -151,8 +152,8 @@ void Status::updateDisplay(StateID id)
 	case DISTANCEMODE:
 		seg1000 = (distance/100);
 		seg100 = ((distance - seg1000*100)/10);
-		seg10 = (distance - seg1000*100 - seg100*10);
-		seg1 = ((distance - seg1000*100 - seg100*10 - seg10)*10)/1;
+		seg10 = (distance - seg1000*100 - seg100*10)/1;
+		seg1 = ((distance - seg1000*100 - seg100*10 - seg10))/10;
 		if(seg1000 > 0) setAnode(1,seg1000,false);
 		else setAnode(1,-1,false);
 		if(seg100 > 0) setAnode(2,seg100,false);

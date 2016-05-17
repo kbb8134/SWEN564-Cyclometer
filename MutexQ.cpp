@@ -9,7 +9,7 @@
 
 MutexQ::MutexQ() {
 	// TODO Auto-generated constructor stub
-	 pthread_mutex_init(accessQ, NULL);
+	 pthread_mutex_init(&accessQ, NULL);
 }
 
 MutexQ::~MutexQ() {
@@ -17,11 +17,11 @@ MutexQ::~MutexQ() {
 }
 
 void MutexQ::lock(){
-	//pthread_mutex_lock(accessQ);
+	pthread_mutex_lock(&accessQ);
 }
 
 void MutexQ::unlock(){
-	//pthread_mutex_unlock(accessQ);
+	pthread_mutex_unlock(&accessQ);
 }
 
 void MutexQ::write(Event e){
@@ -30,7 +30,7 @@ void MutexQ::write(Event e){
 
 Event MutexQ::read(){
 	Event e = NONE;
-	if( ~q.empty() )
+	if( !q.empty() )
 	{
 		e = q.front();
 		q.pop();

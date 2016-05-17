@@ -7,8 +7,11 @@
 
 #include "IOControl.h"
 
-IOControl::IOControl() {
+IOControl::IOControl( std::queue<Event>* qin, pthread_mutex_t *aQ ) {
 	// TODO Auto-generated constructor stub
+	accessQ = aQ;
+	q = qin;
+
 	if( ThreadCtl(_NTO_TCTL_IO, NULL) == -1 )
 	{
 		std::perror("Error - could not access I/O registers");
@@ -62,14 +65,20 @@ void IOControl::receive(){
 	bool prevSTRTSTP = false;
 	bool currSTRTSTP;
 	bool halfsec = false;
-	int count;
-	int countHold;
+	int count = 0;
+	int countHold = 0;
+	int statusCnt = 0;
 	bool holdDone = false;
 	//Status vars
-	AN7SEG anode;
+	AN7SEG anode3;
+	AN7SEG anode2;
+	AN7SEG anode1;
+	AN7SEG anode0;
 	bool km;
 	bool calc;
 	bool to;
+	double currSpeed;
+	double avgSpeed;
 	//Read/write signals
 	uint8_t inputs;
 	uint8_t msg;
@@ -80,56 +89,73 @@ void IOControl::receive(){
 		//printf("Inputs: %x\n",inputs);
 	// check for wheel pulse rising edge- compare prev reading to current
 		currPulse = inputs & (1);
-		if( currPulse && (!prevPulse) )
+		if( currPulse && !prevPulse )
 		{
-			printf("-- Wheel Pulse %d %d --\n", prevPulse, currPulse);
-			StaticObj::mutexQ->lock();
-			StaticObj::mutexQ->write(WHEELPULSE);
-			StaticObj::mutexQ->unlock();
+			//printf("-- Wheel Pulse %d %d --\n", prevPulse, currPulse);
+			pthread_mutex_lock(accessQ);
+			q->push(WHEELPULSE);
+			pthread_mutex_lock(accessQ);
 		}
 	// process inputs
 	// load queue with signals - StaticObj::mutexQ->write(event)
 		currSET = inputs & (1<<1);
 		currSTRTSTP = inputs & (1<<2);
 		currMODE = inputs & (1<<3);
-		if( currSET && currSTRTSTP && currMODE && (countHold > 1000) && !holdDone )
+		if( currSET && currSTRTSTP && currMODE && (countHold > 100) && !holdDone )
 		{
 			printf("-- RESETALL --\n");
-			StaticObj::mutexQ->lock();
+			/*StaticObj::mutexQ->lock();
 			StaticObj::mutexQ->write(RESETALL);
-			StaticObj::mutexQ->unlock();
+			StaticObj::mutexQ->unlock();*/
+
+			pthread_mutex_lock(accessQ);
+			q->push(RESETALL);
+			pthread_mutex_lock(accessQ);
 			holdDone = true;
 			countHold = 0;
 		}
-		else if( currSET && currMODE && (countHold > 1000) && !holdDone )
+		else if( currSET && currMODE && (countHold > 100) && !holdDone )
 		{
 			printf( "-- RESET --\n");
-			StaticObj::mutexQ->lock();
+			/*StaticObj::mutexQ->lock();
 			StaticObj::mutexQ->write(RESET);
-			StaticObj::mutexQ->unlock();
+			StaticObj::mutexQ->unlock();*/
+			pthread_mutex_lock(accessQ);
+			q->push(RESET);
+			pthread_mutex_lock(accessQ);
 			holdDone = true;
 			countHold = 0;
 		}
 		else if( !currSET && prevSET && !holdDone )
 		{
 			printf("-- SET --\n");
-			StaticObj::mutexQ->lock();
+			/*StaticObj::mutexQ->lock();
 			StaticObj::mutexQ->write(SETBUTTON);
-			StaticObj::mutexQ->unlock();
+			StaticObj::mutexQ->unlock();*/
+			pthread_mutex_lock(accessQ);
+			q->push(SETBUTTON);
+			pthread_mutex_lock(accessQ);
 		}
 		else if( !currSTRTSTP && prevSTRTSTP && !holdDone )
 		{
 			printf("-- START/STOP --\n");
-			StaticObj::mutexQ->lock();
+			/*StaticObj::mutexQ->lock();
 			StaticObj::mutexQ->write(STARTSTOPBUTTON);
-			StaticObj::mutexQ->unlock();
+			StaticObj::mutexQ->unlock();*/
+
+			pthread_mutex_lock(accessQ);
+			q->push(STARTSTOPBUTTON);
+			pthread_mutex_lock(accessQ);
 		}
 		else if( !currMODE && prevMODE && !holdDone )
 		{
 			printf("-- MODE --\n");
-			StaticObj::mutexQ->lock();
+			/*StaticObj::mutexQ->lock();
 			StaticObj::mutexQ->write(MODEBUTTON);
-			StaticObj::mutexQ->unlock();
+			StaticObj::mutexQ->unlock();*/
+			pthread_mutex_lock(accessQ);
+			q->push(MODEBUTTON);
+			pthread_mutex_lock(accessQ);
 		}
 		else if( (currSET && currMODE) || (currSET && currSTRTSTP && currMODE) )
 		{
@@ -148,50 +174,56 @@ void IOControl::receive(){
 		km = StaticObj::status->getKm();
 		calc = StaticObj::status->getCalc();
 		to = StaticObj::status->getTimeout();
+		anode3 = StaticObj::status->getAnode(1);
+		anode2 = StaticObj::status->getAnode(2);
+		anode1 = StaticObj::status->getAnode(3);
+		anode0 = StaticObj::status->getAnode(4);
+		currSpeed = StaticObj::status->getCurrentSpeed();
+		avgSpeed = StaticObj::status->getAvgSpeed();
 	// write output signals
-		//AN3
-		anode = StaticObj::status->getAnode(3);
-		msg = 0x00;
-		msg = (1<<3)|((calc && halfsec)<<2)|((!to && halfsec)<<1)|(km);
-		//printf("B: %x\n",msg);
-		//printf("C: %x\n",anode);
-		out8(IO_B_REGISTER,msg);
-		out8(IO_C_REGISTER,anode);
-		//AN2
-		anode = StaticObj::status->getAnode(2);
-		msg = 0x00;
-		msg = (1<<4)|((calc && halfsec)<<2)|((!to && halfsec)<<1)|(km);
-		//printf("B: %x\n",msg);
-		//printf("C: %x\n",anode);
-		out8(IO_B_REGISTER,msg);
-		out8(IO_C_REGISTER,anode);
-		//AN1
-		anode = StaticObj::status->getAnode(1);
-		msg = 0x00;
-		msg = (1<<5)|((calc && halfsec)<<2)|((!to && halfsec)<<1)|(km);
-		//printf("B: %x\n",msg);
-		//printf("C: %x\n",anode);
-		out8(IO_B_REGISTER,msg);
-		out8(IO_C_REGISTER,anode);
 		//AN0
-		anode = StaticObj::status->getAnode(4);
 		msg = 0x00;
-		msg = (1<<6)|((calc && halfsec)<<2)|((!to && halfsec)<<1)|(km);
-		//printf("B: %x\n",msg);
-		//printf("C: %x\n",anode);
-		out8(IO_B_REGISTER,msg);
-		out8(IO_C_REGISTER,anode);
+		msg = msg|(1<<4)|(1<<5)|(1<<6)|((calc && halfsec))|((!to && halfsec)<<1)|(km<<2);//
+		out8(IO_C_REGISTER,msg);
+		out8(IO_B_REGISTER,anode0);
+		usleep(1);
+		//AN1
+		msg = 0x00;
+		msg = msg|(1<<3)|(1<<5)|(1<<6)|((calc && halfsec))|((!to && halfsec)<<1)|(km<<2);//
+		out8(IO_C_REGISTER,msg);
+		out8(IO_B_REGISTER,anode1);
+		usleep(1);
+		//AN2
+		msg = 0x00;
+		msg = msg|(1<<3)|(1<<4)|(1<<6)|((calc && halfsec))|((!to && halfsec)<<1)|(km<<2);//
+		out8(IO_C_REGISTER,msg);
+		out8(IO_B_REGISTER,anode2);
+		usleep(1);
+		//AN3
+		msg = 0x00;
+		msg = msg|(1<<3)|(1<<4)|(1<<5)|((calc && halfsec))|((!to && halfsec)<<1)|(km<<2); //
+		out8(IO_C_REGISTER,msg);
+		out8(IO_B_REGISTER,anode3);
+		usleep(1);
 	// wait a bit
 		prevPulse = currPulse;
 		prevSET = currSET;
 		prevSTRTSTP = currSTRTSTP;
 		prevMODE = currMODE;
 		count++;
-		if(count > 250)
+		if(count > 25)
 		{
 			halfsec = !halfsec;
 			count = 0;
 		}
-		usleep(2000);
+		if( statusCnt > 50 )
+		{
+			printf("-------------------------------------------------\n");
+			printf("STATUS\n km: %d\n calc: %d\n to: %d\n anode3: %x\n anode2: %x\n anode1: %x\n anode0: %x\n currSpeed: %f\n avgSpeed %f\n",km,calc,to,anode3,anode2,anode1,anode0,currSpeed,avgSpeed);
+			printf("-------------------------------------------------\n");
+			statusCnt = 0;
+		}
+		else statusCnt++;
+		usleep(2000); //2000
 	}
 }

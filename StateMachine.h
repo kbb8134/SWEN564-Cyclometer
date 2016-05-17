@@ -17,6 +17,8 @@
 #include <string>
 #include <time.h>
 #include <unistd.h>
+#include <cmath>
+#include <cfloat>
 
 #include "StaticObj.h"
 #include "Event.h"
@@ -43,7 +45,7 @@ public:
 	StateID getStateID();
 	void acceptEvent(Event e);
 	void update();
-	void calculate(double seconds);
+	void calculate(int seconds);
 	void setCalculations(bool);
 	void setAutoMode(bool);
 	void reset();

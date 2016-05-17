@@ -21,9 +21,11 @@ void* thread_worker_cycl(void* arg)
 	}
 }
 
-Cyclometer::Cyclometer() {
+Cyclometer::Cyclometer( std::queue<Event>* qin, pthread_mutex_t *aQ ) {
 	// Initialize variables
 	stateMachine = new StateMachine();
+	q = qin;
+	accessQ = aQ;
 	//status = new Status();
 	units = false;
 	distancefactor = 0.0;
@@ -51,7 +53,7 @@ Cyclometer::~Cyclometer() {
 	// TODO Auto-generated destructor stub
 }
 
-void Cyclometer::calculate(double seconds){
+void Cyclometer::calculate(int seconds){
 	stateMachine->calculate(seconds);
 }
 
@@ -98,21 +100,32 @@ void Cyclometer::checkTimeout()
 	if (seconds > PULSETIMEOUT)
 	{
 		//queue timeout event
-		StaticObj::mutexQ->lock();
+		/*StaticObj::mutexQ->lock();
 		StaticObj::mutexQ->write(TIMEOUT);
-		StaticObj::mutexQ->unlock();
+		StaticObj::mutexQ->unlock();*/
+		pthread_mutex_lock(accessQ);
+		q->push(TIMEOUT);
+		pthread_mutex_lock(accessQ);
 	}
 }
 
 void Cyclometer::checkQ()
 {
 	// Check Q for events
-	StaticObj::mutexQ->lock();
+	/*StaticObj::mutexQ->lock();
 	Event e = StaticObj::mutexQ->read();
-	StaticObj::mutexQ->unlock();
+	StaticObj::mutexQ->unlock();*/
+	Event e = NONE;
+	pthread_mutex_lock(accessQ);
+	if( !q->empty() )
+	{
+		e = q->front();
+		q->pop();
+	}
+	pthread_mutex_lock(accessQ);
 	// TODO Do stuff with events
 	time_t t;
-	float seconds;
+	int seconds;
 	switch(e)
 	{
 	case SETBUTTON:
@@ -135,7 +148,7 @@ void Cyclometer::checkQ()
 		StaticObj::status->setTimeout(false);
 		setCalculations(true);
 		t = time( NULL );
-		seconds = difftime(lastPulse,t);
+		seconds = -1*(difftime(lastPulse,t));
 		calculate(seconds);
 		lastPulse = t;
 		break;

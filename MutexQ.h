@@ -15,7 +15,7 @@
 class MutexQ {
 private:
 	std::queue< Event > q;
-	pthread_mutex_t* accessQ;
+	pthread_mutex_t accessQ;
 
 public:
 	MutexQ();

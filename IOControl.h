@@ -28,11 +28,16 @@
 #include "StaticObj.h"
 #include "An7Seg.h"
 
+#include <pthread.h>
+#include <queue>
+
 class IOControl {
 	uintptr_t CONTROL_HANDLE;
 	uintptr_t A_HANDLE;
 	uintptr_t B_HANDLE;
 	uintptr_t C_HANDLE;
+	std::queue< Event > *q;
+	pthread_mutex_t *accessQ;
 public:
 
 	/*
@@ -42,6 +47,7 @@ public:
 	 */
 
 	IOControl();
+	IOControl( std::queue<Event>* qin, pthread_mutex_t *aQ );
 	~IOControl();
 
 	void receive();
