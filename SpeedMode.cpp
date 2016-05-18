@@ -14,6 +14,7 @@ void SpeedMode::onEnter(StateMachine& statemachine){
 }
 
 void SpeedMode::accept(StateMachine& statemachine, Event e){
+	bool autoMode;
 	switch(e)
 	{
 	case MODEBUTTON:
@@ -21,6 +22,16 @@ void SpeedMode::accept(StateMachine& statemachine, Event e){
 		break;
 	case RESETALL:
 		statemachine.transition(States::KM_MI);
+		break;
+	case SETBUTTON:
+		// manual/auto mode
+		autoMode = statemachine.getAutoMode();
+		statemachine.setAutoMode(!autoMode);
+		break;
+	case STARTSTOPBUTTON:
+		// manual/auto mode
+		autoMode = statemachine.getCalculations();
+		statemachine.setCalculations(!autoMode);
 		break;
 	default:
 		break;

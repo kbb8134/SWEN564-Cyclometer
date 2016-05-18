@@ -7,11 +7,15 @@
 
 #include "IOControl.h"
 
+/*
+ * IOControl constructor - initializes I/O settings and controls
+ */
 IOControl::IOControl( std::queue<Event>* qin, pthread_mutex_t *aQ ) {
-	// TODO Auto-generated constructor stub
+	// Initialize variables
 	accessQ = aQ;
 	q = qin;
 
+	// Initialize HW I/O control handlers
 	if( ThreadCtl(_NTO_TCTL_IO, NULL) == -1 )
 	{
 		std::perror("Error - could not access I/O registers");
@@ -47,12 +51,10 @@ IOControl::IOControl( std::queue<Event>* qin, pthread_mutex_t *aQ ) {
     out8(CONTROL_HANDLE,0x90);
 }
 
-IOControl::~IOControl() {
-	// TODO Auto-generated destructor stub
-}
+IOControl::~IOControl() {}
 
 /*
- * Function to receive input from the QNX box
+ * receive - Function to receive input from and write output to the FPGA via the QNX box
  */
 void IOControl::receive(){
 	// Handle readings
@@ -79,6 +81,7 @@ void IOControl::receive(){
 	bool to;
 	double currSpeed;
 	double avgSpeed;
+	double dist;
 	//Read/write signals
 	uint8_t inputs;
 	uint8_t msg;
@@ -86,15 +89,14 @@ void IOControl::receive(){
 	{
 	//Read from inputs on FPGA
 		inputs = in8(IO_A_REGISTER);
-		//printf("Inputs: %x\n",inputs);
 	// check for wheel pulse rising edge- compare prev reading to current
 		currPulse = inputs & (1);
 		if( currPulse && !prevPulse )
 		{
-			//printf("-- Wheel Pulse %d %d --\n", prevPulse, currPulse);
+			//printf("-- Wheel Pulse --\n");
 			pthread_mutex_lock(accessQ);
 			q->push(WHEELPULSE);
-			pthread_mutex_lock(accessQ);
+			pthread_mutex_unlock(accessQ);
 		}
 	// process inputs
 	// load queue with signals - StaticObj::mutexQ->write(event)
@@ -104,48 +106,34 @@ void IOControl::receive(){
 		if( currSET && currSTRTSTP && currMODE && (countHold > 100) && !holdDone )
 		{
 			printf("-- RESETALL --\n");
-			/*StaticObj::mutexQ->lock();
-			StaticObj::mutexQ->write(RESETALL);
-			StaticObj::mutexQ->unlock();*/
-
 			pthread_mutex_lock(accessQ);
 			q->push(RESETALL);
-			pthread_mutex_lock(accessQ);
+			pthread_mutex_unlock(accessQ);
 			holdDone = true;
 			countHold = 0;
 		}
 		else if( currSET && currMODE && (countHold > 100) && !holdDone )
 		{
 			printf( "-- RESET --\n");
-			/*StaticObj::mutexQ->lock();
-			StaticObj::mutexQ->write(RESET);
-			StaticObj::mutexQ->unlock();*/
 			pthread_mutex_lock(accessQ);
 			q->push(RESET);
-			pthread_mutex_lock(accessQ);
+			pthread_mutex_unlock(accessQ);
 			holdDone = true;
 			countHold = 0;
 		}
 		else if( !currSET && prevSET && !holdDone )
 		{
 			printf("-- SET --\n");
-			/*StaticObj::mutexQ->lock();
-			StaticObj::mutexQ->write(SETBUTTON);
-			StaticObj::mutexQ->unlock();*/
 			pthread_mutex_lock(accessQ);
 			q->push(SETBUTTON);
-			pthread_mutex_lock(accessQ);
+			pthread_mutex_unlock(accessQ);
 		}
 		else if( !currSTRTSTP && prevSTRTSTP && !holdDone )
 		{
 			printf("-- START/STOP --\n");
-			/*StaticObj::mutexQ->lock();
-			StaticObj::mutexQ->write(STARTSTOPBUTTON);
-			StaticObj::mutexQ->unlock();*/
-
 			pthread_mutex_lock(accessQ);
 			q->push(STARTSTOPBUTTON);
-			pthread_mutex_lock(accessQ);
+			pthread_mutex_unlock(accessQ);
 		}
 		else if( !currMODE && prevMODE && !holdDone )
 		{
@@ -155,7 +143,7 @@ void IOControl::receive(){
 			StaticObj::mutexQ->unlock();*/
 			pthread_mutex_lock(accessQ);
 			q->push(MODEBUTTON);
-			pthread_mutex_lock(accessQ);
+			pthread_mutex_unlock(accessQ);
 		}
 		else if( (currSET && currMODE) || (currSET && currSTRTSTP && currMODE) )
 		{
@@ -180,28 +168,29 @@ void IOControl::receive(){
 		anode0 = StaticObj::status->getAnode(4);
 		currSpeed = StaticObj::status->getCurrentSpeed();
 		avgSpeed = StaticObj::status->getAvgSpeed();
+		dist = StaticObj::status->getDistance();
 	// write output signals
 		//AN0
 		msg = 0x00;
-		msg = msg|(1<<4)|(1<<5)|(1<<6)|((calc && halfsec))|((!to && halfsec)<<1)|(km<<2);//
+		msg = (1<<4)|(1<<5)|(1<<6)|((calc && halfsec))|((!to && halfsec)<<1)|(km<<2);//
 		out8(IO_C_REGISTER,msg);
 		out8(IO_B_REGISTER,anode0);
 		usleep(1);
 		//AN1
 		msg = 0x00;
-		msg = msg|(1<<3)|(1<<5)|(1<<6)|((calc && halfsec))|((!to && halfsec)<<1)|(km<<2);//
+		msg = (1<<3)|(1<<5)|(1<<6)|(1<<7)|((calc && halfsec))|((!to && halfsec)<<1)|(km<<2);//
 		out8(IO_C_REGISTER,msg);
 		out8(IO_B_REGISTER,anode1);
 		usleep(1);
 		//AN2
 		msg = 0x00;
-		msg = msg|(1<<3)|(1<<4)|(1<<6)|((calc && halfsec))|((!to && halfsec)<<1)|(km<<2);//
+		msg = (1<<3)|(1<<4)|(1<<6)|(1<<7)|((calc && halfsec))|((!to && halfsec)<<1)|(km<<2);//
 		out8(IO_C_REGISTER,msg);
 		out8(IO_B_REGISTER,anode2);
 		usleep(1);
 		//AN3
 		msg = 0x00;
-		msg = msg|(1<<3)|(1<<4)|(1<<5)|((calc && halfsec))|((!to && halfsec)<<1)|(km<<2); //
+		msg = (1<<3)|(1<<4)|(1<<5)|(1<<7)|((calc && halfsec))|((!to && halfsec)<<1)|(km<<2); //
 		out8(IO_C_REGISTER,msg);
 		out8(IO_B_REGISTER,anode3);
 		usleep(1);
@@ -219,11 +208,11 @@ void IOControl::receive(){
 		if( statusCnt > 50 )
 		{
 			printf("-------------------------------------------------\n");
-			printf("STATUS\n km: %d\n calc: %d\n to: %d\n anode3: %x\n anode2: %x\n anode1: %x\n anode0: %x\n currSpeed: %f\n avgSpeed %f\n",km,calc,to,anode3,anode2,anode1,anode0,currSpeed,avgSpeed);
+			printf("STATUS\n km: %d\n calc: %d\n to: %d\n anode3: %x\n anode2: %x\n anode1: %x\n anode0: %x\n currSpeed: %f\n avgSpeed: %f\n dist: %f\n",km,calc,to,anode3,anode2,anode1,anode0,currSpeed,avgSpeed,dist);
 			printf("-------------------------------------------------\n");
 			statusCnt = 0;
 		}
 		else statusCnt++;
-		usleep(2000); //2000
+		usleep(2000); // = 2ms
 	}
 }

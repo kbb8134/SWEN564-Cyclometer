@@ -12,13 +12,17 @@ Status::Status() {
 	this -> avgSpeed = 0.0;
 	this -> distance = 0.0;
 	circumf = 210;
+	elapsedTime = 0.0;
 	an1 = OFF;
 	an2 = OFF;
 	an3 = OFF;
 	an4 = OFF;
 	km = true;
 }
-//GETs
+
+/*
+ * GET functions - returns variables
+ */
 bool Status::getTimeout()
 {
 	return pulseTimeout;
@@ -58,10 +62,18 @@ int Status::getCount()
 	return count;
 }
 
-// SETs
+/*
+ * SET functions - sets variables and associated Status variables
+ */
 void Status::setTimeout(bool in)
 {
 	pulseTimeout = in;
+	if(in)
+	{
+		currentSpeed = 0.0;
+		avgSpeed = 0.0;
+		elapsedTime = 0.0;
+	}
 }
 
 void Status::setCalc(bool in)
@@ -101,6 +113,9 @@ void Status::setCount(int in)
 	count = in;
 }
 
+/*
+ * reset - resets the Status variables to initial states
+ */
 void Status::reset(){
 	circumf = 210;
 	distance = 0;
@@ -109,6 +124,9 @@ void Status::reset(){
 	elapsedTime = 0.0;
 }
 
+/*
+ * updateDisplay - sets current 7-segment display values based on current state and current Status variables
+ */
 void Status::updateDisplay(StateID id)
 {
 	int min;
@@ -153,7 +171,7 @@ void Status::updateDisplay(StateID id)
 		seg1000 = (distance/100);
 		seg100 = ((distance - seg1000*100)/10);
 		seg10 = (distance - seg1000*100 - seg100*10)/1;
-		seg1 = ((distance - seg1000*100 - seg100*10 - seg10))/10;
+		seg1 = (distance - seg1000*100 - seg100*10 - seg10)*10/1;
 		if(seg1000 > 0) setAnode(1,seg1000,false);
 		else setAnode(1,-1,false);
 		if(seg100 > 0) setAnode(2,seg100,false);
@@ -194,6 +212,10 @@ void Status::updateDisplay(StateID id)
 	}
 }
 
+/*
+ * getAnode - returns the 7-segment display of the associated anode id
+ * 			*** NOTE: id 1 is anode3, id 2 is anode2, id 3 is anode1, and id 4 is anode0
+ */
 AN7SEG Status::getAnode(int id)
 {
 	switch(id)
@@ -215,6 +237,10 @@ AN7SEG Status::getAnode(int id)
 	}
 }
 
+/*
+ * setAnode - sets the 7-segment display of the associated anode id based on the variable value
+ * 			*** NOTE: id 1 is anode3, id 2 is anode2, id 3 is anode1, and id 4 is anode0
+ */
 void Status::setAnode(int id, int num, bool dp)
 {
 	AN7SEG an;

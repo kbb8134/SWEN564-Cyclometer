@@ -8,7 +8,9 @@
 #ifndef AN7SEG_H_
 #define AN7SEG_H_
 
-
+/*
+ * AN7SEG - translation of displayed value with decimal point to hexadecimal 7-segment values
+ */
 enum AN7SEG { // DECIMAL POINT ACTIVE - binary OR to deactivate = (1)|AN7SEG
 	OFF = 0xFF, 	//11111111 -> all segments off
 	ZERO = 0x03, 	//00000011

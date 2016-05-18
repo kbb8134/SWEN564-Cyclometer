@@ -12,6 +12,7 @@ void TimeMode::onEnter(StateMachine& statemachine){
 }
 
 void TimeMode::accept(StateMachine& statemachine, Event e){
+	bool autoMode;
 	switch(e)
 	{
 	case MODEBUTTON:
@@ -21,7 +22,14 @@ void TimeMode::accept(StateMachine& statemachine, Event e){
 		statemachine.transition(States::KM_MI);
 		break;
 	case SETBUTTON:
-		// manualmode
+		// manual/auto mode
+		autoMode = statemachine.getAutoMode();
+		statemachine.setAutoMode(!autoMode);
+		break;
+	case STARTSTOPBUTTON:
+		// manual/auto mode
+		autoMode = statemachine.getCalculations();
+		statemachine.setCalculations(!autoMode);
 		break;
 	default:
 		break;

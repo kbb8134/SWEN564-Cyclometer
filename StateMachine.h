@@ -45,11 +45,14 @@ public:
 	StateID getStateID();
 	void acceptEvent(Event e);
 	void update();
-	void calculate(int seconds);
+	void calculate(double seconds);
 	void setCalculations(bool);
 	void setAutoMode(bool);
 	void reset();
 	void setUnits(bool);
+
+	bool getCalculations();
+	bool getAutoMode();
 };
 
 #endif /* STATEMACHINE_H_ */

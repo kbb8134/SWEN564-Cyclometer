@@ -51,6 +51,7 @@ class Cyclometer {
     uintptr_t ctrlHandle;
     time_t lastPulse;
     time_t startTrip;
+    int ms;
 
 	std::queue< Event > *q;
 	pthread_mutex_t *accessQ;

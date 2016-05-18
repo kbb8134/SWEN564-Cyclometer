@@ -16,6 +16,7 @@ int main(int argc, char** argv){
 	// Create message queue
 	std::queue< Event > q;
 	pthread_mutex_t accessQ;
+	pthread_mutex_init(&accessQ, NULL);
 
 	// Construct Cyclometer
 	printf("Create Cyclometer\n");
